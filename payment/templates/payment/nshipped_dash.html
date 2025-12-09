@@ -1,0 +1,45 @@
+{% extends "base.html"%}
+{% block content %}
+<!-- Header-->
+
+<div class = "container">
+    <div class = "row">
+        <center>
+            <div class = "col-8">
+                <h3>not Shipped Orders Dashboard</h3>
+                <table class="table table-striped table-hover table-bordered ">
+                    <thead class="table-dark">
+                      <tr>
+                       
+                        <th scope="col">order</th>
+                        <th scope="col">price</th>
+                        <th scope="col">customer email</th>
+                        <th scope="col">date ordered</th>
+                        <th scope="col">ship the order</th>
+                        
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {%for item in orders%}
+                      <tr>
+                    
+                        <td><a href="{% url 'orders' item.id%}" class="text-black text-decoration-none">{{item.id}}</a></td>
+                        <td><a href="{% url 'orders' item.id%}"class="text-black text-decoration-none">{{item.amount_paid}}</a></td>
+                        <td><a href="{% url 'orders' item.id%}"class="text-black text-decoration-none">{{item.email}}</a></td>
+                        <td><a href="{% url 'orders' item.id%}"class="text-black text-decoration-none">{{item.date_ordered}}</a></td>
+                        <td > <form method = "POST">
+                          {% csrf_token%}
+                          <input type="hidden" name ="shipping_status" value ="true">
+                          <input type="hidden" name ="num" value ="{{item.id}}">
+                          <button type="Submit" class= "btn btn-success btn-sm"> mark as ship </button>
+                        </td>
+                        
+                      </tr>
+                      {% endfor%}
+                    </tbody>
+                  </table>
+            </div>
+        </center>
+    </div>
+</div>
+{%endblock%}

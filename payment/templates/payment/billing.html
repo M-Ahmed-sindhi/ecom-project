@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<header class="bg-dark py-5">
+  <div class="container px-4 px-lg-5 my-5">
+    <div class="text-center text-white">
+      <h1 class="display-4 fw-bolder">blling</h1>
+      <p class="lead fw-normal text-white-50 mb-0"> enter your billing adreess</p>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="row">
+    <!-- Order Summary Section -->
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-header">
+          Order Summary
+        </div>
+        <div class="card-body">
+          {% for product in cart_products %}
+            <p>{{ product.name }}</p>
+            
+            {% if product.on_sale %}
+              <p>Price: {{ product.sale_price }}</p>
+            {% else %}
+              <p>Price: {{ product.price }}</p>
+            {% endif %}
+
+            <div class="row align-items-center mt-3">
+              <div class="col-md-3">
+                <label class="form-label">Quantity:</label>
+                {% for key, value in cart_quantity.items %}
+                  {% if key == product.id|stringformat:"s" %}
+                    {{ value }}
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+            <p>Total: {{ totals }}</p>
+            <a href="{% url 'cart_summary' %}" class="btn btn-sm btn-outline-secondary">Update</a>
+            <hr>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br>
+
+  <div class="row">
+    <!-- Shipping Info Section -->
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-header">
+          Shipping Info
+        </div>
+        <div class="card-body">
+          Name: {{ shipping_info.shipping_full_name }}<br/>
+          Email: {{ shipping_info.shipping_email }}<br/>
+          Address: {{ shipping_info.shipping_address }}<br/>
+          City: {{ shipping_info.shipping_city }}<br/>
+          State: {{ shipping_info.shipping_state }}<br/>
+          Zipcode: {{ shipping_info.shipping_zipcode }}<br/>
+          Country: {{ shipping_info.shipping_country }}<br/>
+          <br/>
+          <a href="{% url 'checkout' %}" class="btn btn-outline-secondary">Update Shipping</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br>
+
+  <div class="row">
+    <!-- Billing Section -->
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-header">
+          Billing
+        </div>
+        <div class="card-body">
+          <form method="post" action="{% url 'process_order' %}">
+            {% csrf_token %}
+            {{ billing_form.as_p }}
+     
+          <a href="{% url 'checkout' %}" class="btn btn-outline-secondary">Update Shipping</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-md-8 offset-md-2 text-center">
+      <button type='submit' href="{% url 'process_order' %}" class="btn btn-primary">Pay Now</button>
+    </div>
+  </div>
+</div>
+</form>
+
+
+{% endblock %}
+
