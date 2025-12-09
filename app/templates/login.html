@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<header class="bg-dark py-5">
+  <div class="container px-4 px-lg-5 my-5">
+    <div class="text-center text-white">
+      <h1 class="display-4 fw-bolder">About Us...</h1>
+      <p class="lead fw-normal text-white-50 mb-0">Welcome To Codemy Ecommerce...</p>
+    </div>
+  </div>
+</header>
+<br></br>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-8 mx-auto">
+      <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="username" class="form-label">Username or Email</label>
+          <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
+        </div>
+       
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+        </div>
+
+        <button type="submit" class="btn btn-secondary">Login</button>
+      </form>
+    </div>
+  </div>
+</div>
+<br></br>           
+<br></br>
+<br></br>
+
+{% endblock %}
