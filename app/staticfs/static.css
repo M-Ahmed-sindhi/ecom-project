@@ -1,0 +1,6 @@
+.image{
+        width: 100px;
+        height: auto;   /* keeps aspect ratio */
+        border-radius: 50%;
+    
+}

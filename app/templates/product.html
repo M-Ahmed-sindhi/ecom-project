@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <div class="card mb-3">
+    <div class="row g-0">
+      <div class="col-md-4">
+        <img src="{{ product.image.url }}" class="img-fluid rounded-start card-img-top" alt="{{ product.name }}">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">{{ product.name }}</h5>
+          <p class="card-text">{{ product.description }}</p>
+          <small class="text-body-secondary">Last updated 3 mins ago</small>
+
+          <div class="row mt-3">
+            <div class="col-md-3">
+              <label class="form-label">Quantity:</label>
+            </div>
+            <div class="col-md-2">
+              <select class="form-select" id="quantity" name="quantity">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            </div>
+          </div>
+
+          {% if product.on_sale %}
+            <span class="text-muted text-decoration-line-through">{{ product.price }}</span>
+            <p>{{ product.if_sale }}</p>
+          {% else %}
+            <p class="card-title">{{ product.price }}</p>
+            <p>ID: {{ product.id }}</p>
+          {% endif %}
+
+          <button type="button" class="btn btn-primary" data-product-id="{{ product.id }}" id="add-to-cart">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<br></br>
+<br></br>
+<br></br>
+<br></br>
+
+<script>
+  $(document).on('click', '#add-to-cart', function (e) {
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "cart-add" %}',
+      data: {
+        product_id: $(this).data('product-id'),
+        quantity: $('#quantity').val(),
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        action: 'post'
+      },
+      success: function (response) {
+        console.log('Success:', response);
+      },
+      error: function (xhr, errmsg, err) {
+        console.error('Error:', errmsg);
+      }
+    });
+  });
+</script>
+{% endblock %}
