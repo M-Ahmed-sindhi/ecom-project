@@ -93,24 +93,16 @@ WSGI_APPLICATION = "projectname.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
+# Check for DATABASE_URL (Railway provides this automatically)
 DATABASES = {
-    'default': {
-         #'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': BASE_DIR / 'db.sqlite3',
-        
-        'default':dj_database_url.config(default=os.environ.get('Postgres.DATABASE_URL'),conn_max_age=1800),
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway ',   
-        'USER': 'postgres',
-        'PASSWORD': os.getenv('DB_PASSWORD_POSTGRES') ,
-        'HOST': 'postgres.railway.internal',
-        'PORT': '5432',
-
+    "default": {
+        "ENGINE": "djongo",
+        "NAME": 'Clusters0',   # MUST EXIST OR WILL BE CREATED
+        "CLIENT": {
+            "host": os.getenv("MONGO_HOST"),
+        }
     }
 }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
