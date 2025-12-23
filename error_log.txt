@@ -1,0 +1,95 @@
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/djongo/sql2mongo/query.py", line 854, in parse
+    return handler(self, statement)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/djongo/sql2mongo/query.py", line 891, in _alter
+    query.execute()
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/djongo/sql2mongo/query.py", line 631, in _unique
+    self.db[self.left_table].create_index(
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/pymongo/collection.py", line 2059, in create_index
+    return self.__create_indexes([index], session, **cmd_options)[0]
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/pymongo/collection.py", line 1949, in __create_indexes
+    self._command(
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/pymongo/collection.py", line 238, in _command
+    return sock_info.command(
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/pymongo/pool.py", line 683, in command
+    return command(self, dbname, spec, slave_ok,
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/pymongo/network.py", line 159, in command
+    helpers._check_command_response(
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/pymongo/helpers.py", line 164, in _check_command_response
+    raise OperationFailure(errmsg, code, response, max_wire_version)
+pymongo.errors.OperationFailure: available disk space of 233709568 bytes is less than required minimum of 524288000, full error: {'ok': 0.0, 'errmsg': 'available disk space of 233709568 bytes is less than required minimum of 524288000', 'code': 14031, 'codeName': 'OutOfDiskSpace'}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/djongo/cursor.py", line 51, in execute
+    self.result = Query(
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/djongo/sql2mongo/query.py", line 781, in __init__
+    self._query = self.parse()
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/djongo/sql2mongo/query.py", line 866, in parse
+    raise exe from e
+djongo.exceptions.SQLDecodeError: 
+
+	Keyword: None
+	Sub SQL: None
+	FAILED SQL: ALTER TABLE "django_content_type" ADD CONSTRAINT "django_content_type_app_label_model_76bd3d3b_uniq" UNIQUE ("app_label", "model")
+	Params: ()
+	Version: 1.3.7
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/djongo/cursor.py", line 59, in execute
+    raise db_exe from e
+djongo.database.DatabaseError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/mac/Desktop/myproject/manage.py", line 22, in <module>
+    main()
+  File "/Users/mac/Desktop/myproject/manage.py", line 18, in main
+    execute_from_command_line(sys.argv)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/core/management/__init__.py", line 401, in execute_from_command_line
+    utility.execute()
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/core/management/__init__.py", line 395, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/core/management/base.py", line 330, in run_from_argv
+    self.execute(*args, **cmd_options)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/core/management/base.py", line 371, in execute
+    output = self.handle(*args, **options)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/core/management/base.py", line 85, in wrapped
+    res = handle_func(*args, **kwargs)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/core/management/commands/migrate.py", line 243, in handle
+    post_migrate_state = executor.migrate(
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/db/migrations/executor.py", line 117, in migrate
+    state = self._migrate_all_forwards(state, plan, full_plan, fake=fake, fake_initial=fake_initial)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/db/migrations/executor.py", line 147, in _migrate_all_forwards
+    state = self.apply_migration(state, migration, fake=fake, fake_initial=fake_initial)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/db/migrations/executor.py", line 227, in apply_migration
+    state = migration.apply(state, schema_editor)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/db/migrations/migration.py", line 124, in apply
+    operation.database_forwards(self.app_label, schema_editor, old_state, project_state)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/db/migrations/operations/models.py", line 508, in database_forwards
+    alter_together(
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/db/backends/base/schema.py", line 384, in alter_unique_together
+    self.execute(self._create_unique_sql(model, columns))
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/db/backends/base/schema.py", line 142, in execute
+    cursor.execute(sql, params)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/Users/mac/Desktop/myproject/env/lib/python3.9/site-packages/djongo/cursor.py", line 59, in execute
+    raise db_exe from e
+django.db.utils.DatabaseError
