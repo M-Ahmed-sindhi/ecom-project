@@ -21,7 +21,7 @@
                   <p>{{ product.name }}</p>
                   
 
-                  {% if product.on_sale %}
+                  {% if product.is_sale %}
                       <p>price : {{ product.sale_price }}</p>
                   {% else %}
                       <p>price : {{ product.price }}</p>

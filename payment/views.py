@@ -117,13 +117,13 @@ def process_order(request):
             product_id = product["id"]
             product_obj = Product.objects.get(pk=product_id)
 
-            if product_obj.on_sale:
-                price = product_obj.if_sale
+            if product_obj.is_sale:
+                price = product_obj.sale_price
             else:
                 price = product_obj.price
          
             for key, value in cart_quantity().items() :
-                   if int(key) == product["id"]:
+                   if str(key) == str(product["id"]):
                         create_order_item = OrderItem(
                               user=user,  
                               order=create_order,
@@ -147,28 +147,29 @@ def process_order(request):
 
          for product in cart_products:
             
-               product_id = product["id"]
-               product_obj = Product.objects.get(pk=product_id)
+            product_id = product["id"]
+            product_obj = Product.objects.get(pk=product_id)
 
-               if product_obj.on_sale:
-                price = product_obj.if_sale
-               else:
+            if product_obj.is_sale:
+                price = product_obj.sale_price
+            else:
                 price = product_obj.price
          
-               for key, value in cart_quantity().items() :
-                   if int(key) == product["id"]:
-                        create_order_item = OrderItem(
-                              user=user,  
-                              order=create_order,
-                              product=product_obj,
-                              quantity=value,
-                              price=price
-                        )
-                        create_order_item.save()
-                        #del4ete cart
-               for key in list(request.session.keys()):
-                  if key == 'cart':
-                    del request.session['cart'][key]
+            for key, value in cart_quantity().items():
+                if str(key) == str(product["id"]):
+                    create_order_item = OrderItem(
+                        user=user,  
+                        order=create_order,
+                        product=product_obj,
+                        quantity=value,
+                        price=price
+                    )
+                    create_order_item.save()
+                        
+            for key in list(request.session.keys()):
+                if key == 'cart':
+                    del request.session[key]
+                    request.session.modified = True
          messages.success(request, "Order processed successfully")
          return redirect('image')
 

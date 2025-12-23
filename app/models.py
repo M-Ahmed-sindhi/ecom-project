@@ -1,69 +1,81 @@
-from mongoengine import Document, StringField, DateTimeField, IntField
-from datetime import datetime
+from django.db import models
+import datetime
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 
-from mongoengine import FloatField, BooleanField, ReferenceField
-from mongoengine import BooleanField, DateField, IntField, EmbeddedDocumentField
-from mongoengine import EmbeddedDocument, EmbeddedDocumentField
+# Categories of Products
+class Category(models.Model):
+    name = models.CharField(max_length=50)
 
-class Profile(Document):
-    user_id = IntField(required=True, unique=True)  # Django User ID
-    date_modified = DateTimeField(default=datetime.utcnow)
-    phone = StringField(max_length=20)
-    address1 = StringField(max_length=200)
-    address2 = StringField(max_length=200)
-    city = StringField(max_length=200)
-    state = StringField(max_length=200)
-    zipcode = StringField(max_length=200)
-    country = StringField(max_length=200)
+    def __str__(self):
+        return self.name
 
-    meta = {"collection": "profiles"}
-
-class Category(Document):
-    name = StringField(max_length=100, required=True)
-
-    meta = {"collection": "categories"}
-
-   
+    class Meta:
+        verbose_name_plural = 'categories'
 
 
-class Customer(Document):
-    first_name = StringField(max_length=20, required=True)
-    last_name = StringField(max_length=20, required=True)
-    email = StringField(max_length=100, required=True, unique=True)
-    password = StringField(max_length=100)
-    phone = StringField(max_length=20)
+# Customers
+class Customer(models.Model):
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    phone = models.CharField(max_length=10)
+    email = models.EmailField(max_length=100)
+    password = models.CharField(max_length=100)
 
-    meta = {"collection": "customers"}
-
-
-
-class Product(Document):
-    name = StringField(max_length=50, required=True)
-    price = FloatField(default=0)
-    category = ReferenceField(Category, required=True)
-    description = StringField(max_length=200)
-    image = StringField()  # store path or URL
-    on_sale = BooleanField(default=False)
-    if_sale = FloatField(default=0)
-
-    meta = {"collection": "products"}
-
-class ProductSnapshot(EmbeddedDocument):
-    product_id = StringField()
-    name = StringField()
-    price = FloatField()
-
-class Order(Document):
-    customer = ReferenceField(Customer, required=True)
-    product = EmbeddedDocumentField(ProductSnapshot)
-    quantity = IntField(default=1)
-    address = StringField(max_length=100)
-    phone = StringField(max_length=20)
-    date = DateField(default=datetime.utcnow)
-    status = BooleanField(default=False)
-
-    meta = {"collection": "orders"}
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
 
 
+# All of our Products
+class Product(models.Model):
+    name = models.CharField(max_length=100)
+    price = models.DecimalField(default=0, decimal_places=2, max_digits=12)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
+    description = models.CharField(max_length=250, default='', blank=True, null=True)
+    image = models.ImageField(upload_to='uploads/product/')
+    
+    # Sale Stuff
+    is_sale = models.BooleanField(default=False)
+    sale_price = models.DecimalField(default=0, decimal_places=2, max_digits=12)
 
-# Create your models here.
+    def __str__(self):
+        return self.name
+
+
+# Customer Orders
+class Order(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    address = models.CharField(max_length=100, default='', blank=True)
+    phone = models.CharField(max_length=20, default='', blank=True)
+    date = models.DateField(default=datetime.datetime.today)
+    status = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.product.name
+
+
+# User Profile
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    date_modified = models.DateTimeField(User, auto_now=True)
+    phone = models.CharField(max_length=20, blank=True)
+    address1 = models.CharField(max_length=200, blank=True)
+    address2 = models.CharField(max_length=200, blank=True)
+    city = models.CharField(max_length=200, blank=True)
+    state = models.CharField(max_length=200, blank=True)
+    zipcode = models.CharField(max_length=200, blank=True)
+    country = models.CharField(max_length=200, blank=True)
+    old_cart = models.CharField(max_length=200, blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username
+
+# Create a user Profile by default when user signs up
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        user_profile = Profile(user=instance)
+        user_profile.save()
+
+post_save.connect(create_profile, sender=User)

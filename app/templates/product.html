@@ -27,9 +27,9 @@
             </div>
           </div>
 
-          {% if product.on_sale %}
+          {% if product.is_sale %}
             <span class="text-muted text-decoration-line-through">{{ product.price }}</span>
-            <p>{{ product.if_sale }}</p>
+            <p>{{ product.sale_price }}</p>
           {% else %}
             <p class="card-title">{{ product.price }}</p>
             <p>ID: {{ product.id }}</p>

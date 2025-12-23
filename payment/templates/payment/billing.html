@@ -22,7 +22,7 @@
           {% for product in cart_products %}
             <p>{{ product.name }}</p>
             
-            {% if product.on_sale %}
+            {% if product.is_sale %}
               <p>Price: {{ product.sale_price }}</p>
             {% else %}
               <p>Price: {{ product.price }}</p>

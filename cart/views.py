@@ -18,7 +18,7 @@ def cart_summary(request):
 def cart_add(request):
     if request.method == 'POST':
         try:
-            product_id = int(request.POST.get('product_id'))
+            product_id = request.POST.get('product_id')
             cart = Cart(request)
             product = get_object_or_404(Product, id=product_id)
             product_quantity = int(request.POST.get('quantity', 1))

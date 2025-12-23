@@ -13,16 +13,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-import dj_database_url
 
 load_dotenv()
 
-
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 
 # Quick-start development settings - unsuitable for production
@@ -32,12 +27,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-e!t4cd&nb3hbb*hv50(mhge2^vysi@ogzqsw9m3gok0)j9uc=^"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
-USE_TZ = True
-TIME_ZONE = 'Asia/Karachi'   # example: 'Africa/Lagos', 'Asia/Kolkata', 'Europe/London'
-
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -49,7 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'app',  
+    'app',
     'cart',
     'payment',
 ]
@@ -62,11 +55,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-
-
 ]
 
 ROOT_URLCONF = "projectname.urls"
@@ -93,16 +81,17 @@ WSGI_APPLICATION = "projectname.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-# Check for DATABASE_URL (Railway provides this automatically)
+
 DATABASES = {
     "default": {
         "ENGINE": "djongo",
-        "NAME": 'Clusters0',   # MUST EXIST OR WILL BE CREATED
+        "NAME": 'Clusters0',
         "CLIENT": {
             "host": os.getenv("MONGO_HOST"),
         }
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -128,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = 'Asia/Karachi'
 
 USE_I18N = True
 
@@ -140,8 +129,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / "static",  # if you have a global static folder
+    BASE_DIR / "static",
 ]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = '/upload/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'upload')
 

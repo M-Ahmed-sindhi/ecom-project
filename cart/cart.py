@@ -51,7 +51,7 @@ class Cart:
     def get_products(self):
     
     # FILTER OUT EMPTY STRINGS FIRST
-        product_ids = [int(id) for id in self.cart.keys() if id and id.strip()]
+        product_ids = [id for id in self.cart.keys() if id and id.strip()]
         print("DEBUG - Looking for product IDs:", product_ids)  # Add this
     
         products = Product.objects.filter(id__in=product_ids)
@@ -121,11 +121,11 @@ class Cart:
         quantities = self.cart
         cart_total = 0
         for key, quantity in quantities.items():
-            key_int = int(key)
+            key_str = str(key)
             for product in products:
-                if product.id == key_int:
-                    if product.on_sale:
-                        cart_total += product.if_sale * quantity
+                if str(product.id) == key_str:
+                    if product.is_sale:
+                        cart_total += product.sale_price * quantity
                     else:
                         cart_total += product.price * quantity
         return cart_total
