@@ -17,7 +17,7 @@ from decouple import config
 
 connect(
     db="ecomdb",
-    host=config("MONGO_HOST")
+    host=config("MONGO_URI")
 )
 
 
