@@ -12,13 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-from mongoengine import connect
 from decouple import config
-
-connect(
-    db="ecomdb",
-    host=config("MONGO_URI")
-)
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -90,8 +84,11 @@ WSGI_APPLICATION = "projectname.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "djongo",
+        "NAME": 'Clusters0',
+        "CLIENT": {
+            "host": config("MONGO_HOST"),
+        }
     }
 }
 
