@@ -4,5 +4,7 @@ djongo
 pymongo
 python-decouple
 whitenoise
+pytz
+sqlparse
 
 
