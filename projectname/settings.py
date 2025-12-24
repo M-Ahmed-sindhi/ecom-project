@@ -87,7 +87,7 @@ DATABASES = {
         "ENGINE": "djongo",
         "NAME": 'Clusters0',
         "CLIENT": {
-            "host": config("MONGO_HOST"),
+            "host": config("MONGO_URI"),
         }
     }
 }
