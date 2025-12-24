@@ -1,6 +1,6 @@
 Django
 gunicorn
-djongo
+mongoengine
 pymongo
 python-decouple
 whitenoise
