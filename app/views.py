@@ -88,7 +88,7 @@ def category_summary(request):
 
 # Create your views here.
 def image(request):
-    products = Product.objects.only('id', 'name', 'price', 'is_sale', 'sale_price', 'image').all()[:20]
+    products = Product.objects.only('id', 'name', 'price', 'is_sale', 'sale_price', 'image').all().iterator()
     return render(request, "index.html", {'products':products})
 
 def about(request):
@@ -157,7 +157,7 @@ def category(request, bob):
     try:
         
         category = Category.objects.get ( name=bob)
-        products = Product.objects.filter(category=category).only('id', 'name', 'price', 'is_sale', 'sale_price', 'image')[:20]
+        products = Product.objects.filter(category=category).only('id', 'name', 'price', 'is_sale', 'sale_price', 'image').iterator()
         return render(request, "category.html", {'products':products, 'category':category})
 
     except:
@@ -166,6 +166,6 @@ def category(request, bob):
     
 def search(request):
     query = request.GET.get('q', '')
-    products = Product.objects.filter(name__icontains=query).only('id', 'name', 'price', 'description', 'image')[:20] if query else []
+    products = Product.objects.filter(name__icontains=query).only('id', 'name', 'price', 'description', 'image') if query else []
     return render(request, "search_results.html", {'products': products, 'query': query})
   

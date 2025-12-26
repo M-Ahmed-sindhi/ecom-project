@@ -54,7 +54,7 @@ class Cart:
         product_ids = [id for id in self.cart.keys() if id and id.strip()]
         print("DEBUG - Looking for product IDs:", product_ids)  # Add this
     
-        products = Product.objects.filter(id__in=product_ids).only('id', 'name', 'price', 'is_sale', 'sale_price', 'image', 'description')
+        products = Product.objects.filter(id__in=product_ids)
         print("DEBUG - Found products:", [p.id for p in products])  # Add this
 
     
@@ -70,9 +70,6 @@ class Cart:
                 'quantity': quantity,
                 'image': product.image.url if product.image else '',
                 'total_price': float(product.price) * quantity,
-                'is_sale': product.is_sale,
-                'sale_price': float(product.sale_price),
-                'description': product.description,
             })
     
         return cart_products
@@ -120,7 +117,7 @@ class Cart:
       
     def total(self):
         product_ids = self.cart.keys()
-        products = Product.objects.filter(id__in=product_ids).only('id', 'is_sale', 'sale_price', 'price')
+        products = Product.objects.filter(id__in=product_ids)
         quantities = self.cart
         cart_total = 0
         for key, quantity in quantities.items():
