@@ -6,7 +6,7 @@ pymongo==3.11.4
 python-decouple
 whitenoise
 pytz
-sqlparse
+sqlparse==0.2.4
 dnspython
 
 
