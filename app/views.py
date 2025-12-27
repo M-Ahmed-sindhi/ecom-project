@@ -89,7 +89,7 @@ def category_summary(request):
 
 # Create your views here.
 def image(request):
-    products_list = Product.objects.all().order_by('name')
+    products_list = Product.objects.only('id', 'name', 'price', 'is_sale', 'sale_price', 'image').all()
     paginator = Paginator(products_list, 20) 
     page_number = request.GET.get('page')
     products = paginator.get_page(page_number)
@@ -161,7 +161,7 @@ def category(request, bob):
     try:
         
         category = Category.objects.get ( name=bob)
-        products_list = Product.objects.filter(category=category).order_by('name')
+        products_list = Product.objects.filter(category=category).only('id', 'name', 'price', 'is_sale', 'sale_price', 'image')
         paginator = Paginator(products_list, 20)
         page_number = request.GET.get('page')
         products = paginator.get_page(page_number)
@@ -173,6 +173,6 @@ def category(request, bob):
     
 def search(request):
     query = request.GET.get('q', '')
-    products = Product.objects.filter(name__icontains=query).order_by('name') if query else []
+    products = Product.objects.filter(name__icontains=query).only('id', 'name', 'price', 'description', 'image') if query else []
     return render(request, "search_results.html", {'products': products, 'query': query})
   
