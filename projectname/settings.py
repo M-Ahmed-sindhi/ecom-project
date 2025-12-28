@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from decouple import config
+import certifi
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -88,6 +89,8 @@ DATABASES = {
         "NAME": 'Clusters0',
         "CLIENT": {
             "host": config("MONGO_URI"),
+            "tlsCAFile": certifi.where(),
+            "tls": True,
         }
     }
 }
