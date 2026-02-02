@@ -13,11 +13,18 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from decouple import config
-import certifi
+
+
+from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -30,7 +37,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', "django-insecure-e!t4cd&nb3hbb*hv50(mhge2^v
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.onrender.com']
+ALLOWED_HOSTS = ['*', '.onrender.com', "localhost",
+    "127.0.0.1",]
 
 
 # Application definition
@@ -83,18 +91,22 @@ WSGI_APPLICATION = "projectname.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+from django.core.exceptions import ImproperlyConfigured
+
+MONGODB_URI = os.environ.get('MONGODB_URI')
+
+if not MONGODB_URI:
+    raise ImproperlyConfigured("MONGODB_URI environment variable is not set. Please set it in your Render dashboard.")
+
 DATABASES = {
-    "default": {
-        "ENGINE": "djongo",
-        "NAME": 'Clusters0',
-        "CLIENT": {
-            "host": config("MONGO_URI"),
-            "tlsCAFile": certifi.where(),
-            "tls": True,
+    'default': {
+       "ENGINE": "djongo",
+        "NAME": os.environ.get('MONGODB_DB', 'Cluster0'),
+        'CLIENT': {
+            "host": MONGODB_URI,
         }
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

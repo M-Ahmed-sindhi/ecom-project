@@ -12,10 +12,12 @@ from django.utils import timezone
 
 # Create your views here.
 
+
 def orders(request, pk ):
       if request.user.is_authenticated and request.user.is_superuser:
           order = p_Order.objects.get(id=pk)
-          orderitems = OrderItem.objects.filter(order=pk)
+          # with djongo embedded field, order.items is a list of OrderItem instances
+          orderitems = order.items 
           if request.POST:
               status = request.POST['shipping_status']
               num = request['num']
@@ -106,72 +108,53 @@ def process_order(request):
     my_shipping_info.get('shipping_zip_code', ''),
     my_shipping_info.get('shipping_country', ''),
 ])
+      
+      # Common logic for order creation
+      order_data = {
+          'full_name': full_name,
+          'email': email,
+          'shipping_address': shipping_address,
+          'amount_paid': totals,
+          'items': [] # Initialize empty list for embedded items
+      }
       if request.user.is_authenticated:
-         user = request.user
-         create_order = p_Order(user=user,full_name=full_name, email=email, shipping_address=shipping_address, amount_paid=totals)  
-         create_order.save()
-         order_id = create_order.pk
+          order_data['user'] = request.user
+      
+      create_order = p_Order(**order_data)
+      
+      # We prepare items BEFORE saving if we want to include them in the initial save, 
+      # or we can append and save. For embedded, we just build the list.
+      
+      for product in cart_products:
+        product_id = product["id"]
+        product_obj = Product.objects.get(pk=product_id)
 
-         for product in cart_products:
-            
-            product_id = product["id"]
-            product_obj = Product.objects.get(pk=product_id)
+        if product_obj.is_sale:
+            price = product_obj.sale_price
+        else:
+            price = product_obj.price
+        
+        for key, value in cart_quantity().items():
+            if str(key) == str(product["id"]):
+                # Create OrderItem instance (not saving to DB yet, just object)
+                item = OrderItem(
+                    product_id=product_obj.pk,
+                    product_name=product_obj.name,
+                    quantity=value,
+                    price=price
+                )
+                create_order.items.append(item)
+      
+      create_order.save()
 
-            if product_obj.is_sale:
-                price = product_obj.sale_price
-            else:
-                price = product_obj.price
-         
-            for key, value in cart_quantity().items() :
-                   if str(key) == str(product["id"]):
-                        create_order_item = OrderItem(
-                              user=user,  
-                              order=create_order,
-                              product=product_obj,
-                              quantity=value,
-                              price=price
-                        )
-                        create_order_item.save()
-                        #del4ete cart
-            for key in list(request.session.keys()):
-               if key == 'cart':
-                del request.session[key]
-                request.session.modified = True
+      # Clear cart
+      for key in list(request.session.keys()):
+        if key == 'cart':
+            del request.session[key]
+            request.session.modified = True
 
-         messages.success(request, "Order processed successfully")
-         return redirect('image')
-      else:
-         user = None
-         create_order = p_Order(full_name=full_name, email=email, shipping_address=shipping_address, amount_paid=totals)  
-         create_order.save()
-
-         for product in cart_products:
-            
-            product_id = product["id"]
-            product_obj = Product.objects.get(pk=product_id)
-
-            if product_obj.is_sale:
-                price = product_obj.sale_price
-            else:
-                price = product_obj.price
-         
-            for key, value in cart_quantity().items():
-                if str(key) == str(product["id"]):
-                    create_order_item = OrderItem(
-                        user=user,  
-                        order=create_order,
-                        product=product_obj,
-                        quantity=value,
-                        price=price
-                    )
-                    create_order_item.save()
-                        
-            for key in list(request.session.keys()):
-                if key == 'cart':
-                    del request.session[key]
-                    request.session.modified = True
-         messages.success(request, "Order processed successfully")
-         return redirect('image')
+      messages.success(request, "Order processed successfully")
+      return redirect('image')
 
     else:
       messages.success(request, "Invalid access to process order page")
