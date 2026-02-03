@@ -12,3 +12,4 @@ dnspython
 
 certifi
 python-dotenv
+Pillow
