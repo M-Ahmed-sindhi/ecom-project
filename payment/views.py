@@ -136,13 +136,14 @@ def process_order(request):
         
         for key, value in cart_quantity().items():
             if str(key) == str(product["id"]):
-                # Create OrderItem instance (not saving to DB yet, just object)
-                item = OrderItem(
-                    product_id=product_obj.pk,
-                    product_name=product_obj.name,
-                    quantity=value,
-                    price=price
-                )
+                # Create OrderItem dictionary (Djongo requires dict for embedded objects in this context)
+                item = {
+                    'product_id': str(product_obj.pk),
+                    'product_name': product_obj.name,
+                    'quantity': value,
+                    'price': price,
+                    'unit_price': price
+                }
                 create_order.items.append(item)
       
       create_order.save()
