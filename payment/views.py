@@ -141,8 +141,8 @@ def process_order(request):
                     'product_id': str(product_obj.pk),
                     'product_name': product_obj.name,
                     'quantity': value,
-                    'price': price,
-                    'unit_price': price
+                    'price': str(price),
+                    'unit_price': str(price)
                 }
                 create_order.items.append(item)
       
