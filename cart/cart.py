@@ -66,10 +66,10 @@ class Cart:
             cart_products.append({
                 'id': product.id,
                 'name': product.name,
-                'price': float(product.price),
+                'price': float(str(product.price)),
                 'quantity': quantity,
                 'image': product.image.url if product.image else '',
-                'total_price': float(product.price) * quantity,
+                'total_price': float(str(product.price)) * quantity,
             })
     
         return cart_products
@@ -96,7 +96,7 @@ class Cart:
         return products
         
     def get_total_price(self):
-        return sum(float(item['price']) * item['quantity'] for item in self.get_productes())
+        return sum(float(item['price']) * item['quantity'] for item in self.get_products())
     
     def update(self, product, quantity):
         product_id = str(product)
@@ -125,9 +125,9 @@ class Cart:
             for product in products:
                 if str(product.id) == key_str:
                     if product.is_sale:
-                        cart_total += product.sale_price * quantity
+                        cart_total += float(str(product.sale_price)) * quantity
                     else:
-                        cart_total += product.price * quantity
+                        cart_total += float(str(product.price)) * quantity
         return cart_total
 
         
