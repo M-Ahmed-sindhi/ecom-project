@@ -5,6 +5,15 @@ from django.dispatch import receiver
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from bson.decimal128 import Decimal128
+import decimal
+
+class MongoDecimalField(models.DecimalField):
+    def to_python(self, value):
+        if isinstance(value, Decimal128):
+            return value.to_decimal()
+        return super().to_python(value)
+
 
 
 class ShippingAddress(models.Model):
@@ -100,14 +109,14 @@ class OrderItem(models.Model):
         default=1,
         verbose_name=_("Quantity")
     )
-    price = models.DecimalField(
+    price = MongoDecimalField(
         max_digits=10, 
         decimal_places=2,
         verbose_name=_("Price")
     )
     
     # Add metadata for better querying
-    unit_price = models.DecimalField(
+    unit_price = MongoDecimalField(
         max_digits=10,
         decimal_places=2,
         verbose_name=_("Unit Price"),
@@ -162,7 +171,7 @@ class p_Order(models.Model):
         max_length=1500,  # Reduced from 15000 for better MongoDB performance
         verbose_name=_("Shipping Address")
     )
-    amount_paid = models.DecimalField(
+    amount_paid = MongoDecimalField(
         max_digits=10,  # Increased for better flexibility
         decimal_places=2,
         verbose_name=_("Amount Paid")
@@ -189,13 +198,13 @@ class p_Order(models.Model):
     )
     
     # Additional metadata
-    shipping_cost = models.DecimalField(
+    shipping_cost = MongoDecimalField(
         max_digits=10,
         decimal_places=2,
         default=0.00,
         verbose_name=_("Shipping Cost")
     )
-    tax_amount = models.DecimalField(
+    tax_amount = MongoDecimalField(
         max_digits=10,
         decimal_places=2,
         default=0.00,
