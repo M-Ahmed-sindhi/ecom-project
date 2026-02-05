@@ -44,7 +44,7 @@ def orders(request, pk ):
 def shipped_dash(request,):
       
       if request.user.is_authenticated and request.user.is_superuser:
-        orders = p_Order.objects.filter(shipped=True)
+        orders = p_Order.objects.filter(status__in=[p_Order.OrderStatus.SHIPPED, p_Order.OrderStatus.DELIVERED])
         
          
         
@@ -69,7 +69,7 @@ def shipped_dash(request,):
 def nshipped_dash(request):
     if request.user.is_authenticated and request.user.is_superuser:
          
-        orders = p_Order.objects.filter(shipped=False)
+        orders = p_Order.objects.exclude(status__in=[p_Order.OrderStatus.SHIPPED, p_Order.OrderStatus.DELIVERED])
        
         if request.method == "POST":  # Check if form was submitted
             num = request.POST.get('num')  # Get the value of 'num' from POST
