@@ -10,9 +10,14 @@ import decimal
 
 class MongoDecimalField(models.DecimalField):
     def to_python(self, value):
-        if isinstance(value, Decimal128):
+        if hasattr(value, 'to_decimal'):
             return value.to_decimal()
-        return super().to_python(value)
+        if isinstance(value, float):
+            return self.context.create_decimal_from_float(value)
+        try:
+             return decimal.Decimal(value)
+        except (decimal.InvalidOperation, TypeError):
+             return super().to_python(value)
 
 
 
