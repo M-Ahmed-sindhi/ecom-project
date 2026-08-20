@@ -33,7 +33,7 @@ def update_info(request):
             shipping_instance.user = request.user
             shipping_instance.save()
             messages.success(request, "Your info is updated")
-            return redirect('image')
+            return redirect('home')
     else:
         form = UserInfoForm(instance=profile)
         shipping_form = ShippingAddressForm(instance=shipping_user)
@@ -53,7 +53,7 @@ def update_password(request):
             user = form.save()
             update_session_auth_hash(request, user)  # critical to keep session valid
             messages.success(request, "Password updated successfully")
-            return redirect('image')
+            return redirect('home')
         else:
             for error in form.errors.values():
                 messages.error(request, error)
@@ -73,7 +73,7 @@ def update_user(request):
                 form.save()
                 login(request, current_user)
                 messages.success(request, "Profile updated")
-                return redirect('image')
+                return redirect('home')
 
         return render(request, "update_user.html", {"form": form})
     else:
@@ -88,12 +88,22 @@ def category_summary(request):
      return render(request, "category_summary.html", {"categories": categories})
 
 # Create your views here.
-def image(request):
-    products_list = Product.objects.only('id', 'name', 'price', 'is_sale', 'sale_price', 'image').all().order_by('name')
-    paginator = Paginator(products_list, 20) 
+def home(request):
+    # Get all products without order_by (Djongo doesn't support it well)
+    products_list = list(Product.objects.only('id', 'name', 'price', 'is_sale', 'sale_price', 'image').all())
+    
+    # Sort in Python instead of database
+    products_list.sort(key=lambda x: x.name)
+    
+    # Paginate
+    paginator = Paginator(products_list, 20)
     page_number = request.GET.get('page')
     products = paginator.get_page(page_number)
-    return render(request, "index.html", {'products':products})
+    
+    return render(request, "index.html", {'products': products})
+
+def about(request):
+    return render(request, "about.html", {})
 
 def about(request):
     return render(request, "about.html", {})
@@ -101,35 +111,43 @@ def about(request):
 
 def login_user(request):
     if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
+
         if user is not None:
             login(request, user)
 
+            # Restore cart from profile if available
             profile = Profile.objects.filter(user=user).first()
-
             if profile and profile.old_cart:
                 try:
                     request.session['cart'] = json.loads(profile.old_cart)
                 except json.JSONDecodeError:
-                 pass
+                    pass
                 profile.old_cart = ""
                 profile.save()
 
             messages.success(request, "You have been logged in")
-            return redirect("image")
+            return redirect("home")   # ensure 'home' is a valid URL name
 
+        else:
+            messages.error(request, "Invalid username or password")
+            return render(request, 'login.html', {'error': 'Invalid credentials'})
 
-            
-            
-    else:
-        return render(request, "login.html", {})  # show page on GET
+    else:   # GET request – show the login form
+        return render(request, 'login.html')
 
 def logout_user(request):
-    logout(request)
-    messages.success(request, "You have been logged out")
-    return redirect("image")
+    if request.method == 'POST':          # Optional: enforce POST for security
+        logout(request)
+        messages.success(request, "You have been logged out")
+        return redirect('home')          # Ensure 'home' is a valid URL name
+    else:
+        # GET request – perhaps show a confirmation page, or just log out anyway
+        logout(request)
+        messages.success(request, "You have been logged out")
+        return redirect('home')
 
 def register_user(request):
     if request.method == "POST":
@@ -142,7 +160,7 @@ def register_user(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, "You are registered")
-                return redirect("image")
+                return redirect("home")
             else:
                 messages.error(request, "Authentication failed")
                 return redirect("login")
@@ -169,7 +187,7 @@ def category(request, bob):
 
     except:
         messages.error(request, "No such category")
-        return redirect("image")
+        return redirect("home")
     
 def search(request):
     query = request.GET.get('q', '')

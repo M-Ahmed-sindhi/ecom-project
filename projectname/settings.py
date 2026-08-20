@@ -103,7 +103,7 @@ DATABASES = {
        "ENGINE": "djongo",
         "NAME": os.environ.get('MONGODB_DB', 'Cluster0'),
         'CLIENT': {
-            "host": MONGODB_URI,
+            "host":"mongodb+srv://admin:newpasswordig@cluster0.eopen79.mongodb.net/?appName=Cluster0",
         }
     }
 }

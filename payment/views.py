@@ -27,19 +27,19 @@ def orders(request, pk ):
                  
                  order.save()   
                  messages.success(request, "donee")
-                 return redirect('image')                         
+                 return redirect('home')                         
               else:
                   order.shipped = False
                   order.date_shipped = timezone.now()
                   order.save()
                   messages.success(request, "donee")
-                  return redirect('image')
+                  return redirect('home')
                   
           return render(request, "payment/orders.html",{"order": order, "orderitems": orderitems }) 
           
       else:
          messages.success(request, "access denied")
-         return redirect('image')
+         return redirect('home')
 
 def shipped_dash(request,):
       
@@ -63,7 +63,7 @@ def shipped_dash(request,):
         return render(request, "payment/shipped_dash.html",  {'orders': orders})
       else:
          messages.success(request, "access denied")
-         return redirect('image')
+         return redirect('home')
 
 
 def nshipped_dash(request):
@@ -85,7 +85,7 @@ def nshipped_dash(request):
         return render(request, "payment/nshipped_dash.html",  {'orders': orders})
     else:
           messages.success(request, "access denied")
-          return redirect('image')
+          return redirect('home')
 
 
 
@@ -155,11 +155,11 @@ def process_order(request):
             request.session.modified = True
 
       messages.success(request, "Order processed successfully")
-      return redirect('image')
+      return redirect('home')
 
     else:
       messages.success(request, "Invalid access to process order page")
-      return redirect('image')
+      return redirect('home')
 
 
 def billing(request): 
@@ -183,7 +183,7 @@ def billing(request):
     return render(request, "payment/billing.html",  {'cart_products': cart_products, 'cart_quantity': cart_quantity, 'totals': totals, 'shipping_info': request.POST, 'billing_form': billing_form})
  else:
     messages.success(request, "Invalid access to billing page")
-    return redirect('image')
+    return redirect('home')
 
 
 

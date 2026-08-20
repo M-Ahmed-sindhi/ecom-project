@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from bson.decimal128 import Decimal128
 import decimal
+import uuid
+from djongo.models import ObjectIdField
 
 class MongoDecimalField(models.DecimalField):
     def to_python(self, value):
@@ -22,7 +24,13 @@ class MongoDecimalField(models.DecimalField):
 
 
 class ShippingAddress(models.Model):
-    """Shipping address model for users"""
+    # ✅ Fixed primary key
+    id = models.UUIDField(
+    primary_key=True,
+    default=uuid.uuid4,
+    editable=False
+)
+    
     user = models.ForeignKey(
         User, 
         on_delete=models.CASCADE, 
@@ -73,9 +81,8 @@ class ShippingAddress(models.Model):
         verbose_name=_("Country")
     )
     
-    # MongoDB-specific fields
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         verbose_name = _("Shipping Address")
@@ -86,7 +93,6 @@ class ShippingAddress(models.Model):
         return f"{self.shipping_full_name or 'Unknown'} - {self.shipping_city or 'No City'}"
 
     def clean(self):
-        """Validation for MongoDB document"""
         if self.shipping_email and '@' not in self.shipping_email:
             raise ValidationError({'shipping_email': _('Enter a valid email address.')})
     
@@ -95,12 +101,11 @@ class ShippingAddress(models.Model):
         super().save(*args, **kwargs)
 
 
+# The signal remains unchanged – it now works correctly
 @receiver(post_save, sender=User)
 def create_default_shipping_address(sender, instance, created, **kwargs):
-    """Create a default shipping address when a user is created"""
     if created:
         ShippingAddress.objects.create(user=instance)
-
 
 class OrderItem(models.Model):
     """Abstract model for order items - stored as embedded documents in MongoDB"""
@@ -149,6 +154,8 @@ class OrderItem(models.Model):
 
 class p_Order(models.Model):
     """Main order model using MongoDB ArrayField for embedded items"""
+    def generate_order_number():
+        return f"ORD-{uuid.uuid4().hex[:8].upper()}"
     
     class OrderStatus(models.TextChoices):
         PENDING = 'pending', _('Pending')
@@ -166,20 +173,24 @@ class p_Order(models.Model):
     )
     full_name = models.CharField(
         max_length=250,
-        verbose_name=_("Full Name")
+        verbose_name=_("Full Name"),
+        default=""
     )
     email = models.EmailField(
         max_length=250,
-        verbose_name=_("Email")
+        verbose_name=_("Email"),
+        default=""
     )
     shipping_address = models.TextField(
         max_length=1500,  # Reduced from 15000 for better MongoDB performance
-        verbose_name=_("Shipping Address")
+        verbose_name=_("Shipping Address"),
+        default=""
     )
     amount_paid = MongoDecimalField(
         max_digits=10,  # Increased for better flexibility
         decimal_places=2,
-        verbose_name=_("Amount Paid")
+        verbose_name=_("Amount Paid"),
+        default=0.00
     )
     
     # Use TextChoices for better type safety
@@ -226,6 +237,7 @@ class p_Order(models.Model):
         max_length=50,
         unique=True,
         editable=False,
+        default=generate_order_number,
         verbose_name=_("Order Number")
     )
 
